@@ -1,0 +1,15 @@
+{
+  "name": "rest_api_2nd_assignment",
+  "version": "1.0.0",
+  "description": "That is a rest API project, the second assignent on Advanced Web Development Course",
+  "main": "app.ts",
+  "scripts": {
+    "test": "jest --detectOpenHandles --forceExit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "RestAPIAdvanced"
+  },
+  "author": "Coral Bareket & Yam Balas",
+  "license": "ISC"
+}
