@@ -13,88 +13,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const postModel_1 = __importDefault(require("../models/postModel"));
-const getPostById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const postId = req.params.id;
-    try {
-        console.log('Posts get by id service');
-        const post = yield postModel_1.default.findById(postId);
-        if (!post) {
-            res.status(404).send('Post not found');
-        }
-        else {
-            res.status(200).send(post);
-        }
+const baseController_1 = __importDefault(require("./baseController"));
+class PostsController extends baseController_1.default {
+    constructor() {
+        super(postModel_1.default);
     }
-    catch (error) {
-        res.status(400).send(error.message);
+    create(req, res) {
+        const _super = Object.create(null, {
+            create: { get: () => super.create }
+        });
+        return __awaiter(this, void 0, void 0, function* () {
+            const post = Object.assign({}, req.body);
+            req.body = post;
+            yield _super.create.call(this, req, res);
+        });
     }
-});
-const getAllPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const ownerFilter = req.query.owner;
-    try {
-        console.log('Posts get all posts service');
-        if (ownerFilter) {
-            const posts = yield postModel_1.default.find({ owner: ownerFilter });
-            res.status(200).send(posts);
-        }
-        else {
-            const posts = yield postModel_1.default.find();
-            res.status(200).send(posts);
-        }
-    }
-    catch (error) {
-        res.status(400).send(error.message);
-    }
-});
-const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const post = req.body;
-    try {
-        console.log('Posts create service');
-        const newPost = yield postModel_1.default.create(post);
-        res.status(201).send(newPost);
-    }
-    catch (error) {
-        res.status(400).send(error.message);
-    }
-});
-const deletePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const postId = req.params.id;
-    try {
-        console.log('Posts delete service');
-        const post = yield postModel_1.default.findByIdAndDelete(postId);
-        if (!post) {
-            res.status(404).send('Post not found');
-        }
-        else {
-            res.status(200).send(post);
-        }
-    }
-    catch (error) {
-        res.status(400).send(error.message);
-    }
-});
-const updatePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const postId = req.params.id;
-    const post = req.body;
-    try {
-        console.log('Posts update service');
-        const updatedPost = yield postModel_1.default.findByIdAndUpdate(postId, post, { new: true });
-        if (!updatedPost) {
-            res.status(404).send('Post not found');
-        }
-        else {
-            res.status(200).send(updatedPost);
-        }
-    }
-    catch (error) {
-        res.status(400).send(error.message);
-    }
-});
-exports.default = {
-    getPostById,
-    getAllPosts,
-    createPost,
-    deletePost,
-    updatePost,
-};
+}
+exports.default = new PostsController();
 //# sourceMappingURL=postController.js.map

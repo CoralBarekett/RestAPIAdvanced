@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/controllers/postController.ts</title>
+    <title>Code coverage report for src/controllers/commentController.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../prettify.css" />
     <link rel="stylesheet" href="../../base.css" />
@@ -19,7 +19,7 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/controllers</a> postController.ts</h1>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/controllers</a> commentController.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
@@ -105,10 +105,6 @@
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -118,41 +114,45 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import postModel from '../models/postModel';
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import commentModel from '../models/commentModel';
 import { Request, Response } from 'express';
 import baseController from './baseController';
 &nbsp;
-const getPostById = async (req: Request, res: Response): Promise&lt;void&gt; =&gt; {
-baseController.getById(req, res, postModel);
+const getCommentById = async (req: Request, res: Response): Promise&lt;void&gt; =&gt; {
+    baseController.getById(req, res, commentModel);
 };
 &nbsp;
-const getAllPosts = async (req: Request, res: Response): Promise&lt;void&gt; =&gt; {
-baseController.getAll(req, res, postModel);
+const getAllComments = async (req: Request, res: Response): Promise&lt;void&gt; =&gt; {
+    baseController.getAll(req, res, commentModel);
 };
 &nbsp;
-const createPost = async (req: Request, res: Response): Promise&lt;void&gt; =&gt; {
-baseController.create(req, res, postModel);
+const addComment = async (req: Request, res: Response): Promise&lt;void&gt; =&gt; {
+    baseController.create(req, res, commentModel);
 };
 &nbsp;
-const deletePost = async (req: Request, res: Response): Promise&lt;void&gt; =&gt; {
-baseController.deleteModel(req, res, postModel);
+const deleteComment = async (req: Request, res: Response): Promise&lt;void&gt; =&gt; {
+    baseController.deleteModel(req, res, commentModel);
 };
 &nbsp;
-const updatePost = async (req: Request, res: Response): Promise&lt;void&gt; =&gt; {
-baseController.update(req, res, postModel);
+const updateComment = async (req: Request, res: Response): Promise&lt;void&gt; =&gt; {
+    baseController.update(req, res, commentModel);
 };
 &nbsp;
 export default {
-    getPostById,
-    getAllPosts,
-    createPost,
-    deletePost,
-    updatePost,
+    getCommentById,
+    getAllComments,
+    addComment,
+    deleteComment,
+    updateComment,
 };</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->

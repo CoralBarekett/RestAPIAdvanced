@@ -19,12 +19,14 @@ dotenv_1.default.config();
 const body_parser_1 = __importDefault(require("body-parser"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const postsRoutes_1 = __importDefault(require("./routes/postsRoutes"));
+const commentsRoutes_1 = __importDefault(require("./routes/commentsRoutes"));
 const db = mongoose_1.default.connection;
 db.on('error', (error) => console.error(error));
 db.once('open', () => console.log('Connected to database'));
 app.use(body_parser_1.default.json());
 app.use(body_parser_1.default.urlencoded({ extended: true }));
 app.use('/posts', postsRoutes_1.default);
+app.use('/comments', commentsRoutes_1.default);
 const initApp = () => {
     return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
         if (process.env.DB_CONNECT === undefined) {

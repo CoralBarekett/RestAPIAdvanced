@@ -47,7 +47,7 @@ describe("Posts test", () => {
         }
     }));
     // Test invalid post creation
-    test("Test create new post fail", () => __awaiter(void 0, void 0, void 0, function* () {
+    test("Test create invalid post", () => __awaiter(void 0, void 0, void 0, function* () {
         const invalidPost = {
             title: 'Test Post 1',
             content: 'Test content 1',
@@ -77,7 +77,7 @@ describe("Posts test", () => {
         const response = yield (0, supertest_1.default)(app).get('/posts/' + new mongoose_1.default.Types.ObjectId());
         expect(response.statusCode).toBe(404);
     }));
-    test("Test filter post by owner", () => __awaiter(void 0, void 0, void 0, function* () {
+    test("Test get post by owner", () => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield (0, supertest_1.default)(app).get('/posts?owner=' + testPosts[0].owner);
         expect(response.statusCode).toBe(200);
         expect(response.body.length).toBe(1);
@@ -111,7 +111,7 @@ describe("Posts test", () => {
     }));
     // Test delete with invalid ID
     test("Test delete post with invalid id", () => __awaiter(void 0, void 0, void 0, function* () {
-        const response = yield (0, supertest_1.default)(app).delete('/posts/invalidid');
+        const response = yield (0, supertest_1.default)(app).delete('/posts/s45d6fvbuj9gfh8jinf67gh');
         expect(response.statusCode).toBe(400);
     }));
 });

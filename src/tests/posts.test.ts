@@ -47,7 +47,7 @@ describe("Posts test", () => {
     });
 
     // Test invalid post creation
-    test("Test create new post fail", async () => {
+    test("Test create invalid post", async () => {
         const invalidPost =
         {
             title: 'Test Post 1',
@@ -83,7 +83,7 @@ describe("Posts test", () => {
         expect(response.statusCode).toBe(404);
     });
 
-    test("Test filter post by owner", async () => {
+    test("Test get post by owner", async () => {
         const response = await request(app).get('/posts?owner=' + testPosts[0].owner);
         expect(response.statusCode).toBe(200);
         expect(response.body.length).toBe(1);
@@ -122,7 +122,7 @@ describe("Posts test", () => {
 
     // Test delete with invalid ID
     test("Test delete post with invalid id", async () => {
-        const response = await request(app).delete('/posts/invalidid');
+        const response = await request(app).delete('/posts/s45d6fvbuj9gfh8jinf67gh');
         expect(response.statusCode).toBe(400);
     });
 
