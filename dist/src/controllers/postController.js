@@ -23,9 +23,10 @@ class PostsController extends baseController_1.default {
             create: { get: () => super.create }
         });
         return __awaiter(this, void 0, void 0, function* () {
-            const post = Object.assign({}, req.body);
+            const userId = req.body.userId;
+            const post = Object.assign(Object.assign({}, req.body), { owner: userId });
             req.body = post;
-            yield _super.create.call(this, req, res);
+            _super.create.call(this, req, res);
         });
     }
 }
