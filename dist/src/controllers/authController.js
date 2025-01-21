@@ -49,16 +49,21 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             return;
         }
         // Set a very short expiration for testing purposes
-        const accessToken = jsonwebtoken_1.default.sign({ _id: user._id }, process.env.TOKEN_SECRET, { expiresIn: '3s' } // Short expiration for testing
-        );
-        const refreshToken = jsonwebtoken_1.default.sign({ _id: user._id }, process.env.TOKEN_SECRET, { expiresIn: '7d' });
+        const accessToken = jsonwebtoken_1.default.sign({ _id: user._id }, process.env.TOKEN_SECRET, { expiresIn: process.env.TOKEN_EXPIRATION });
+        const refreshToken = jsonwebtoken_1.default.sign({ _id: user._id }, process.env.TOKEN_SECRET, { expiresIn: process.env.REFRESH_TOKEN_EXPIRATION });
         user.refreshToken = user.refreshToken || [];
         user.refreshToken.push(refreshToken);
         yield user.save();
+        if (user.refreshToken == null) {
+            user.refreshToken = [];
+        }
+        user.refreshToken.push(refreshToken);
+        yield user.save();
         res.status(200).json({
+            email: user.email,
+            _id: user._id,
             accessToken,
-            refreshToken,
-            _id: user._id
+            refreshToken
         });
     }
     catch (error) {

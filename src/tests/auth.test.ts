@@ -22,9 +22,12 @@ afterAll((done) => {
 
 const baseUrl = "/auth";
 
-type User = IUser & {
-  accessToken?: string,
-  refreshToken?: string
+type User = {
+    email: string;
+    password: string;
+    accessToken?: string;
+    refreshToken?: string;
+    _id?: string;
 };
 
 const testUser: User = {
@@ -60,9 +63,10 @@ describe("Auth Tests", () => {
     expect(response.statusCode).toBe(200);
     const accessToken = response.body.accessToken;
     const refreshToken = response.body.refreshToken;
+    const userId = response.body._id;
     expect(accessToken).toBeDefined();
     expect(refreshToken).toBeDefined();
-    expect(response.body._id).toBeDefined();
+    expect(userId).toBeDefined();
     testUser.accessToken = accessToken;
     testUser.refreshToken = refreshToken;
     testUser._id = response.body._id;
@@ -91,11 +95,11 @@ describe("Auth Tests", () => {
     expect(response2.statusCode).not.toBe(200);
   });
 
-  test("Auth test me", async () => {
+  test("Get protected API", async () => {
     const response = await request(app).post("/posts").send({
       title: "Test Post",
       content: "Test Content",
-      owner: "sdfSd",
+      owner: "invalid owner",
     });
     expect(response.statusCode).not.toBe(201);
     const response2 = await request(app).post("/posts").set(
@@ -103,9 +107,20 @@ describe("Auth Tests", () => {
     ).send({
       title: "Test Post",
       content: "Test Content",
-      owner: "sdfSd",
+      owner: "invalid owner",
     });
     expect(response2.statusCode).toBe(201);
+  });
+
+  test("Get protected API invalid token", async () => {
+    const response = await request(app).post("/posts").set(
+      { authorization: "JWT " + testUser.accessToken + "1" }
+    ).send({
+      title: "Test Post",
+      content: "Test Content",
+      owner: testUser._id,
+    });
+    expect(response.statusCode).not.toBe(201);
   });
 
   test("Test refresh token", async () => {
@@ -119,26 +134,41 @@ describe("Auth Tests", () => {
     testUser.refreshToken = response.body.refreshToken;
   });
 
-  test("Double use refresh token", async () => {
-    const response = await request(app).post(baseUrl + "/refresh").send({
-      refreshToken: testUser.refreshToken,
+  test("Refresh token multipule usege", async () => {
+    //login - get a refresh token
+    const response = await request(app).post(baseUrl + "/login").send({
+      email: testUser.email,
+      password: testUser.password
     });
     expect(response.statusCode).toBe(200);
-    const refreshTokenNew = response.body.refreshToken;
+    testUser.accessToken = response.body.accessToken;
+    testUser.refreshToken = response.body.refreshToken;
 
+    //first use the refresh token and get a new one
     const response2 = await request(app).post(baseUrl + "/refresh").send({
       refreshToken: testUser.refreshToken,
     });
-    expect(response2.statusCode).not.toBe(200);
+    expect(response2.statusCode).toBe(200);
+    const refreshTokenNew = response.body.refreshToken;
 
+    //second use the old refresh token and expect to fail
     const response3 = await request(app).post(baseUrl + "/refresh").send({
-      refreshToken: refreshTokenNew,
+      refreshToken: testUser.refreshToken,
     });
     expect(response3.statusCode).not.toBe(200);
+
+    //try to use the new refresh token and expect to fail
+    const response4 = await request(app).post(baseUrl + "/refresh").send({
+      refreshToken: refreshTokenNew,
+    });
+    expect(response4.statusCode).not.toBe(200);
   });
 
-  test("Test logout", async () => {
-    const response = await request(app).post(baseUrl + "/login").send(testUser);
+  test("Test logout - invalidate refresh token", async () => {
+    const response = await request(app).post(baseUrl + "/login").send({
+      email: testUser.email,
+      password: testUser.password
+    });
     expect(response.statusCode).toBe(200);
     testUser.accessToken = response.body.accessToken;
     testUser.refreshToken = response.body.refreshToken;

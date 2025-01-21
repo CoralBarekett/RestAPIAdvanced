@@ -49,23 +49,29 @@ const login = async (req: Request, res: Response): Promise<void> => {
         const accessToken = jwt.sign(
             { _id: user._id },
             process.env.TOKEN_SECRET,
-            { expiresIn: '3s' }  // Short expiration for testing
+            { expiresIn: process.env.TOKEN_EXPIRATION }
         );
 
         const refreshToken = jwt.sign(
             { _id: user._id },
             process.env.TOKEN_SECRET,
-            { expiresIn: '7d' }
+            { expiresIn: process.env.REFRESH_TOKEN_EXPIRATION }
         );
 
         user.refreshToken = user.refreshToken || [];
         user.refreshToken.push(refreshToken);
         await user.save();
 
+        if(user.refreshToken == null){
+            user.refreshToken = [];
+        }
+        user.refreshToken.push(refreshToken);
+        await user.save();
         res.status(200).json({
+            email: user.email,
+            _id: user._id,
             accessToken,
-            refreshToken,
-            _id: user._id
+            refreshToken
         });
     } catch (error) {
         res.status(400).send(error);

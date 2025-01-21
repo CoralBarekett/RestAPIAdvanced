@@ -59,9 +59,10 @@ describe("Auth Tests", () => {
         expect(response.statusCode).toBe(200);
         const accessToken = response.body.accessToken;
         const refreshToken = response.body.refreshToken;
+        const userId = response.body._id;
         expect(accessToken).toBeDefined();
         expect(refreshToken).toBeDefined();
-        expect(response.body._id).toBeDefined();
+        expect(userId).toBeDefined();
         testUser.accessToken = accessToken;
         testUser.refreshToken = refreshToken;
         testUser._id = response.body._id;
@@ -85,19 +86,27 @@ describe("Auth Tests", () => {
         });
         expect(response2.statusCode).not.toBe(200);
     }));
-    test("Auth test me", () => __awaiter(void 0, void 0, void 0, function* () {
+    test("Get protected API", () => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield (0, supertest_1.default)(app).post("/posts").send({
             title: "Test Post",
             content: "Test Content",
-            owner: "sdfSd",
+            owner: "invalid owner",
         });
         expect(response.statusCode).not.toBe(201);
         const response2 = yield (0, supertest_1.default)(app).post("/posts").set({ authorization: "JWT " + testUser.accessToken }).send({
             title: "Test Post",
             content: "Test Content",
-            owner: "sdfSd",
+            owner: "invalid owner",
         });
         expect(response2.statusCode).toBe(201);
+    }));
+    test("Get protected API invalid token", () => __awaiter(void 0, void 0, void 0, function* () {
+        const response = yield (0, supertest_1.default)(app).post("/posts").set({ authorization: "JWT " + testUser.accessToken + "1" }).send({
+            title: "Test Post",
+            content: "Test Content",
+            owner: testUser._id,
+        });
+        expect(response.statusCode).not.toBe(201);
     }));
     test("Test refresh token", () => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield (0, supertest_1.default)(app).post(baseUrl + "/refresh").send({
@@ -109,23 +118,37 @@ describe("Auth Tests", () => {
         testUser.accessToken = response.body.accessToken;
         testUser.refreshToken = response.body.refreshToken;
     }));
-    test("Double use refresh token", () => __awaiter(void 0, void 0, void 0, function* () {
-        const response = yield (0, supertest_1.default)(app).post(baseUrl + "/refresh").send({
-            refreshToken: testUser.refreshToken,
+    test("Refresh token multipule usege", () => __awaiter(void 0, void 0, void 0, function* () {
+        //login - get a refresh token
+        const response = yield (0, supertest_1.default)(app).post(baseUrl + "/login").send({
+            email: testUser.email,
+            password: testUser.password
         });
         expect(response.statusCode).toBe(200);
-        const refreshTokenNew = response.body.refreshToken;
+        testUser.accessToken = response.body.accessToken;
+        testUser.refreshToken = response.body.refreshToken;
+        //first use the refresh token and get a new one
         const response2 = yield (0, supertest_1.default)(app).post(baseUrl + "/refresh").send({
             refreshToken: testUser.refreshToken,
         });
-        expect(response2.statusCode).not.toBe(200);
+        expect(response2.statusCode).toBe(200);
+        const refreshTokenNew = response.body.refreshToken;
+        //second use the old refresh token and expect to fail
         const response3 = yield (0, supertest_1.default)(app).post(baseUrl + "/refresh").send({
-            refreshToken: refreshTokenNew,
+            refreshToken: testUser.refreshToken,
         });
         expect(response3.statusCode).not.toBe(200);
+        //try to use the new refresh token and expect to fail
+        const response4 = yield (0, supertest_1.default)(app).post(baseUrl + "/refresh").send({
+            refreshToken: refreshTokenNew,
+        });
+        expect(response4.statusCode).not.toBe(200);
     }));
-    test("Test logout", () => __awaiter(void 0, void 0, void 0, function* () {
-        const response = yield (0, supertest_1.default)(app).post(baseUrl + "/login").send(testUser);
+    test("Test logout - invalidate refresh token", () => __awaiter(void 0, void 0, void 0, function* () {
+        const response = yield (0, supertest_1.default)(app).post(baseUrl + "/login").send({
+            email: testUser.email,
+            password: testUser.password
+        });
         expect(response.statusCode).toBe(200);
         testUser.accessToken = response.body.accessToken;
         testUser.refreshToken = response.body.refreshToken;
