@@ -19,6 +19,7 @@ const postModel_1 = __importDefault(require("../models/postModel"));
 const userModel_1 = __importDefault(require("../models/userModel"));
 const testPosts_json_1 = __importDefault(require("./testPosts.json"));
 let app;
+let ownerIdFromResponse;
 const testUser = {
     email: 'test@user.com',
     password: 'testpassword'
@@ -31,8 +32,8 @@ beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
     yield userModel_1.default.deleteMany();
     yield (0, supertest_1.default)(app).post('/auth/register').send(testUser);
     const response = yield (0, supertest_1.default)(app).post('/auth/login').send(testUser);
-    testUser.accessToken = response.body.token;
-    testUser.refreshToken = response.body.token;
+    testUser.accessToken = response.body.accessToken; // Change this line
+    testUser.refreshToken = response.body.refreshToken; // And this line
     expect(response.statusCode).toBe(200);
 }));
 afterAll(() => {
@@ -46,19 +47,20 @@ describe("Posts test", () => {
         expect(response.body.length).toBe(0);
     }));
     test("Test create new post", () => __awaiter(void 0, void 0, void 0, function* () {
-        for (let post of testPosts) {
+        for (const post of testPosts) {
             const response = yield (0, supertest_1.default)(app)
                 .post('/posts')
-                .set('authorization', "JWT" + testUser.accessToken)
+                .set('authorization', "JWT " + testUser.accessToken)
                 .send({
                 title: post.title,
-                content: post.content
+                content: post.content,
                 // owner will be set by the controller
             });
             console.log('Create post response:', response.body);
             expect(response.statusCode).toBe(201);
             expect(response.body.title).toBe(post.title);
             expect(response.body.content).toBe(post.content);
+            ownerIdFromResponse = response.body.owner;
             // expect(response.body.owner).toBeDefined();
             post._id = response.body._id;
         }
@@ -72,7 +74,7 @@ describe("Posts test", () => {
             // Missing title and content
             owner: "Test Owner"
         });
-        expect(response.statusCode).not.toBe(400);
+        expect(response.statusCode).toBe(400);
     }));
     test("Test get all post", () => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield (0, supertest_1.default)(app).get('/posts');
@@ -87,17 +89,17 @@ describe("Posts test", () => {
     // Test get post with invalid ID
     test("Test get post with invalid id", () => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield (0, supertest_1.default)(app).get('/posts/invalidid');
-        expect(response.statusCode).not.toBe(400);
+        expect(response.statusCode).toBe(400);
     }));
     // Test get non-existent post
     test("Test get non-existent post", () => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield (0, supertest_1.default)(app).get('/posts/' + new mongoose_1.default.Types.ObjectId());
-        expect(response.statusCode).not.toBe(404);
+        expect(response.statusCode).toBe(404);
     }));
     test("Test get post by owner", () => __awaiter(void 0, void 0, void 0, function* () {
-        const response = yield (0, supertest_1.default)(app).get('/posts?owner=' + testUser._id);
+        const response = yield (0, supertest_1.default)(app).get('/posts?owner=' + ownerIdFromResponse);
         expect(response.statusCode).toBe(200);
-        expect(response.body.length).toBe(1);
+        expect(response.body.length).toBe(2);
     }));
     test("Test update post", () => __awaiter(void 0, void 0, void 0, function* () {
         const newPost = {
@@ -120,7 +122,7 @@ describe("Posts test", () => {
             .put('/posts/3456tdfgy6567uy')
             .set({ authorization: "JWT " + testUser.accessToken })
             .send(testPosts[0]);
-        expect(response.statusCode).not.toBe(400);
+        expect(response.statusCode).toBe(400);
     }));
     test('Test delete post', () => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield (0, supertest_1.default)(app).delete('/posts/' + testPosts[0]._id)
@@ -133,7 +135,7 @@ describe("Posts test", () => {
     test("Test delete post with invalid id", () => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield (0, supertest_1.default)(app).delete('/posts/s45d6fvbuj9gfh8jinf67gh')
             .set({ authorization: "JWT " + testUser.accessToken });
-        expect(response.statusCode).not.toBe(400);
+        expect(response.statusCode).toBe(400);
     }));
 });
 //# sourceMappingURL=posts.test.js.map

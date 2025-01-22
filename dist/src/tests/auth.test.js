@@ -12,12 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+/* eslint-disable @typescript-eslint/no-unused-vars */
 const supertest_1 = __importDefault(require("supertest"));
 const server_1 = __importDefault(require("../server"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const userModel_1 = __importDefault(require("../models/userModel"));
 const postModel_1 = __importDefault(require("../models/postModel"));
-var app;
+let app;
 beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
     console.log("beforeAll");
     app = yield (0, server_1.default)();

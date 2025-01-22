@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import request from "supertest";
 import initApp from "../server";
 import mongoose from "mongoose";
@@ -5,7 +6,7 @@ import { Express } from "express";
 import userModel, { IUser } from "../models/userModel";
 import postModel from "../models/postModel";
 
-var app: Express;
+let app: Express;
 
 beforeAll(async () => {
   console.log("beforeAll");
