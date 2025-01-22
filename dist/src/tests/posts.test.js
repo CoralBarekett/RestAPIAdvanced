@@ -53,7 +53,7 @@ describe("Posts test", () => {
                 .set('authorization', "JWT " + testUser.accessToken)
                 .send({
                 title: post.title,
-                content: post.content,
+                content: post.content
                 // owner will be set by the controller
             });
             console.log('Create post response:', response.body);

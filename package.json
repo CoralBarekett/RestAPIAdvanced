@@ -10,7 +10,8 @@
     "testAuth": "tsc && jest --detectOpenHandles --forceExit auth.test.ts",
     "testPost": "tsc && jest --detectOpenHandles --forceExit posts.test.ts",
     "testComment": "tsc && jest --detectOpenHandles --forceExit comments.test.ts",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "coverage": "jest --coverage"
   },
   "repository": {
     "type": "git",
