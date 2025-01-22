@@ -12,12 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+/* eslint-disable @typescript-eslint/no-unused-vars */
 const supertest_1 = __importDefault(require("supertest"));
 const server_1 = __importDefault(require("../server"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const userModel_1 = __importDefault(require("../models/userModel"));
 const postModel_1 = __importDefault(require("../models/postModel"));
-var app;
+let app;
 beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
     console.log("beforeAll");
     app = yield (0, server_1.default)();
@@ -118,8 +119,7 @@ describe("Auth Tests", () => {
         testUser.accessToken = response.body.accessToken;
         testUser.refreshToken = response.body.refreshToken;
     }));
-    test("Refresh token multipule usege", () => __awaiter(void 0, void 0, void 0, function* () {
-        //login - get a refresh token
+    test("Refresh token multiple usage", () => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield (0, supertest_1.default)(app).post(baseUrl + "/login").send({
             email: testUser.email,
             password: testUser.password
@@ -127,22 +127,20 @@ describe("Auth Tests", () => {
         expect(response.statusCode).toBe(200);
         testUser.accessToken = response.body.accessToken;
         testUser.refreshToken = response.body.refreshToken;
-        //first use the refresh token and get a new one
         const response2 = yield (0, supertest_1.default)(app).post(baseUrl + "/refresh").send({
             refreshToken: testUser.refreshToken,
         });
         expect(response2.statusCode).toBe(200);
-        const refreshTokenNew = response.body.refreshToken;
-        //second use the old refresh token and expect to fail
+        const refreshTokenNew = response2.body.refreshToken;
+        yield new Promise(resolve => setTimeout(resolve, 100)); // Small delay for token processing
         const response3 = yield (0, supertest_1.default)(app).post(baseUrl + "/refresh").send({
             refreshToken: testUser.refreshToken,
         });
-        expect(response3.statusCode).not.toBe(200);
-        //try to use the new refresh token and expect to fail
+        expect(response3.statusCode).toBe(401); // Expecting specific unauthorized code
         const response4 = yield (0, supertest_1.default)(app).post(baseUrl + "/refresh").send({
             refreshToken: refreshTokenNew,
         });
-        expect(response4.statusCode).not.toBe(200);
+        expect(response4.statusCode).toBe(401); // Expecting specific unauthorized code
     }));
     test("Test logout - invalidate refresh token", () => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield (0, supertest_1.default)(app).post(baseUrl + "/login").send({

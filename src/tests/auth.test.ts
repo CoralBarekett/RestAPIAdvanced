@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import request from "supertest";
 import initApp from "../server";
 import mongoose from "mongoose";
@@ -5,7 +6,7 @@ import { Express } from "express";
 import userModel, { IUser } from "../models/userModel";
 import postModel from "../models/postModel";
 
-var app: Express;
+let app: Express;
 
 beforeAll(async () => {
   console.log("beforeAll");
@@ -134,34 +135,32 @@ describe("Auth Tests", () => {
     testUser.refreshToken = response.body.refreshToken;
   });
 
-  test("Refresh token multipule usege", async () => {
-    //login - get a refresh token
+  test("Refresh token multiple usage", async () => {
     const response = await request(app).post(baseUrl + "/login").send({
-      email: testUser.email,
-      password: testUser.password
+        email: testUser.email,
+        password: testUser.password
     });
     expect(response.statusCode).toBe(200);
     testUser.accessToken = response.body.accessToken;
     testUser.refreshToken = response.body.refreshToken;
 
-    //first use the refresh token and get a new one
     const response2 = await request(app).post(baseUrl + "/refresh").send({
-      refreshToken: testUser.refreshToken,
+        refreshToken: testUser.refreshToken,
     });
     expect(response2.statusCode).toBe(200);
-    const refreshTokenNew = response.body.refreshToken;
+    const refreshTokenNew = response2.body.refreshToken;  
 
-    //second use the old refresh token and expect to fail
+    await new Promise(resolve => setTimeout(resolve, 100)); // Small delay for token processing
+
     const response3 = await request(app).post(baseUrl + "/refresh").send({
-      refreshToken: testUser.refreshToken,
+        refreshToken: testUser.refreshToken,
     });
-    expect(response3.statusCode).not.toBe(200);
+    expect(response3.statusCode).toBe(401);  // Expecting specific unauthorized code
 
-    //try to use the new refresh token and expect to fail
     const response4 = await request(app).post(baseUrl + "/refresh").send({
-      refreshToken: refreshTokenNew,
+        refreshToken: refreshTokenNew,
     });
-    expect(response4.statusCode).not.toBe(200);
+    expect(response4.statusCode).toBe(401);  // Expecting specific unauthorized code
   });
 
   test("Test logout - invalidate refresh token", async () => {
