@@ -255,7 +255,6 @@ describe("Auth Tests", () => {
   });
 
   test("Refresh token multiple usage", async () => {
-    // Step 1: Login and get a new access and refresh token
     const response = await request(app).post(baseUrl + "/login").send({
       email: testUser.email,
       password: testUser.password
@@ -264,29 +263,24 @@ describe("Auth Tests", () => {
     testUser.accessToken = response.body.accessToken;
     testUser.refreshToken = response.body.refreshToken;
   
-    // Step 2: Refresh the token
     const response2 = await request(app).post(baseUrl + "/refresh").send({
       refreshToken: testUser.refreshToken,
     });
     expect(response2.statusCode).toBe(200);
     const refreshTokenNew = response2.body.refreshToken;  
   
-    // Step 3: Wait a bit to allow token processing (optional)
     await new Promise(resolve => setTimeout(resolve, 100));
   
-    // Step 4: Attempt to use the old refresh token - it should be invalid
     const response3 = await request(app).post(baseUrl + "/refresh").send({
-      refreshToken: testUser.refreshToken, // Using the old refresh token
+      refreshToken: testUser.refreshToken, 
     });
-    expect(response3.statusCode).toBe(401);  // Expecting 401 as the token should be invalid
+    expect(response3.statusCode).toBe(401);  
   
-    // Step 5: Use the new refresh token - it should succeed
     const response4 = await request(app).post(baseUrl + "/refresh").send({
-      refreshToken: refreshTokenNew, // Using the new refresh token
+      refreshToken: refreshTokenNew, 
     });
-    expect(response4.statusCode).toBe(200);  // Expecting 200 for a valid refresh
+    expect(response4.statusCode).toBe(200);  
   });
-  
 
   test("Test logout - invalidate refresh token", async () => {
     const response = await request(app).post(baseUrl + "/login").send({
@@ -309,10 +303,9 @@ describe("Auth Tests", () => {
 
   });
 
-  // Additional tests
   test("Auth test invalid route", async () => {
     const response = await request(app).post(baseUrl + "/nonexistentRoute").send(testUser);
-    expect(response.statusCode).toBe(404);  // Expecting 404 for invalid route
+    expect(response.statusCode).toBe(404);  
   });
 
   test("Auth test register fail with missing fields", async () => {
@@ -335,9 +328,9 @@ describe("Auth Tests", () => {
   });
 
   test("Auth test register duplicate user", async () => {
-    await request(app).post(baseUrl + "/register").send(testUser);  // Register the first user
+    await request(app).post(baseUrl + "/register").send(testUser);  
 
-    const response = await request(app).post(baseUrl + "/register").send(testUser); // Try to register again
-    expect(response.statusCode).toBe(400);  // Expecting a validation error due to duplicate email
+    const response = await request(app).post(baseUrl + "/register").send(testUser); 
+    expect(response.statusCode).toBe(400);  
   });
 });
