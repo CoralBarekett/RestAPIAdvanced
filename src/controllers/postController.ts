@@ -1,5 +1,5 @@
-import postModel, { IPost } from "../models/postModel";
 import { Request, Response } from "express";
+import postModel, { IPost } from "../models/postModel";
 import BaseController from "./baseController";
 
 class PostsController extends BaseController<IPost> {
@@ -8,11 +8,13 @@ class PostsController extends BaseController<IPost> {
     }
 
     async create(req: Request, res: Response): Promise<void> {
+        const userId = req.body.userId;
         const post = {
-            ...req.body
-        }
+            ...req.body,
+            owner: userId,
+        };
         req.body = post;
-        await super.create(req, res);
+        super.create(req, res);
     }
 }
 

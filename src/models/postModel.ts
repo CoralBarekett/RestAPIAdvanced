@@ -12,9 +12,9 @@ const postSchema = new Schema<IPost>({
     type: String,
     required: true,
   },
-  content:{
+  content: {
     type: String,
-    required: true
+    required: true,
   },
   owner: {
     type: String,

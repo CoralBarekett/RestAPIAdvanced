@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "nodemon ./src/app.ts",
     "start": "tsc && node dist/app.js",
-    "test": "tsc && jest --detectOpenHandles --forceExit",
+    "test": "tsc && jest --detectOpenHandles --forceExit --coverage --runInBand",
+    "testAuth": "tsc && jest --detectOpenHandles --forceExit auth.test.ts",
+    "testPost": "tsc && jest --detectOpenHandles --forceExit posts.test.ts",
+    "testComment": "tsc && jest --detectOpenHandles --forceExit comments.test.ts",
     "lint": "eslint . --ext .ts"
   },
   "repository": {
@@ -16,15 +19,21 @@
   "author": "Coral Bareket & Yam Balas",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.3",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",
+    "@types/bcrypt": "^5.0.2",
+    "@types/bcryptjs": "^2.4.6",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.14",
+    "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^22.10.5",
     "@types/supertest": "^6.0.2",
     "eslint": "^9.18.0",
