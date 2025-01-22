@@ -13,11 +13,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const server_1 = __importDefault(require("./server"));
+const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
+const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
+const swaggerConfig_1 = __importDefault(require("./swaggerConfig"));
 const port = process.env.PORT;
 const tmpFunc = () => __awaiter(void 0, void 0, void 0, function* () {
     const app = yield (0, server_1.default)();
+    // Generate Swagger documentation
+    const swaggerDocs = (0, swagger_jsdoc_1.default)(swaggerConfig_1.default);
+    // Add Swagger UI to your app
+    app.use('/api-docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerDocs));
+    // Start the server
     app.listen(port, () => {
         console.log(`Server started at http://localhost:${port}`);
+        console.log(`API Documentation available at http://localhost:${port}/api-docs`);
     });
 });
 tmpFunc();
